@@ -12,8 +12,27 @@
 				{
 					"name": "Get All Users",
 					"request": {
-						"method": "GET",
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyIiwidXNlck5hbWUiOiJhZG1pbkBib29rc2hvcC5jb20iLCJuYW1lIjoiQWRtaW4gVXNlciIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTY4OTg0MTc4Nn0.AkxfHR2ziiT-V-4p_BA9nCHzlwY2YA-6VYmmBZMSPag",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"filters\": {\r\n        \"userName\": \"krishna_book_shop@gmail.com\",\r\n        \"firstName\": \"Admin\",\r\n        \"lastName\": \"varma\",\r\n        \"sortBy\": \"firstName\",\r\n        \"sortDirection\": \"DESC\",\r\n        \"pageNo\": 0\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8080/user/api/getAll",
 							"protocol": "http",
@@ -33,6 +52,16 @@
 				{
 					"name": "Add User",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyIiwidXNlck5hbWUiOiJhZG1pbkBib29rc2hvcC5jb20iLCJuYW1lIjoiQWRtaW4gVXNlciIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTY4OTg0MTc4Nn0.AkxfHR2ziiT-V-4p_BA9nCHzlwY2YA-6VYmmBZMSPag",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -63,11 +92,21 @@
 				{
 					"name": "Get User By id",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlck5hbWUiOiJrcmlzaG5hX2Jvb2tfc2hvcEBnbWFpbC5jb20iLCJuYW1lIjoiS3Jpc2huYSBTYW5rdXJpIiwicm9sZSI6IlJlYWRlciIsImlhdCI6MTY4OTgzNjgxN30.d01CCTAFAt2wQpcFmjyUba0qoOhCMbmI1F9U_eNMNNQ",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userId\": 3\r\n}",
+							"raw": "{\r\n    \"userId\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -158,6 +197,16 @@
 				{
 					"name": "Get All Books",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlck5hbWUiOiJrcmlzaG5hX2Jvb2tfc2hvcEBnbWFpbC5jb20iLCJuYW1lIjoiS3Jpc2huYSBTYW5rdXJpIiwicm9sZSI6IlJlYWRlciIsImlhdCI6MTY4OTgzNjgxN30.d01CCTAFAt2wQpcFmjyUba0qoOhCMbmI1F9U_eNMNNQ",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -432,6 +481,71 @@
 								"subscription",
 								"api",
 								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login & Get Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"admin@bookshop.com\",\r\n    \"password\": \"Admin@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/api/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Admin\",\r\n    \"lastName\": \"User\",\r\n    \"role\": \"Admin\",\r\n    \"userName\": \"admin@bookshop.com\",\r\n    \"password\": \"Admin@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/api/addAdmin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"api",
+								"addAdmin"
 							]
 						}
 					},
