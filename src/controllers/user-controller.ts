@@ -1,7 +1,7 @@
 import { IError, ISuccess, IUser } from "../constants/interfaces";
 import { User } from "../entities/User";
 import { getCustomErrorObj, getCustomSuccessObj, getErrorObj, mapUserEntityToDto } from "../mappers/mapper";
-import { getUser } from "../utilities/helpers";
+import { encryptData, getUser } from "../utilities/helpers";
 import { SelectQueryBuilder, UpdateResult } from "typeorm";
 
 export function createUser(req: any, res: any) {
@@ -13,12 +13,14 @@ export function createUser(req: any, res: any) {
         password: req.body?.password
     }
 
+    const encryptedPassword = encryptData(user.password);
+
     const userEntity = User.create({
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
         userName: user.userName,
-        password: user.password 
+        password: encryptedPassword 
     });
 
     userEntity
@@ -90,20 +92,21 @@ export function getAllUsers(req: any, res: any) {
 
     let queryBuilder: SelectQueryBuilder<User> = User.createQueryBuilder('users').select('users');
     if(filters) {
-        if(filters.userNames && filters.userNames.length != 0) {
-            queryBuilder = queryBuilder.orWhere("users.userName in (:userNames)", {userNames: filters.userNames});
+        if(filters.userName && filters.userName.length != 0) {
+            const uName = "%"+ filters.userName +"%"
+            queryBuilder = queryBuilder.orWhere("users.userName like :userName", {userName: uName});
         }
 
-        if(filters.firstNames && filters.firstNames.length != 0) {
-            queryBuilder = queryBuilder.orWhere("users.firstName in (:firstNames)", {firstNames: filters.firstNames});
+        if(filters.firstName && filters.firstName.length != 0) {
+            const fName = "%"+ filters.firstName +"%"
+            queryBuilder = queryBuilder.orWhere("users.firstName like :firstName", {firstName: fName});
         }
 
-        if(filters.lastNames && filters.lastNames.length != 0) {
-            queryBuilder = queryBuilder.orWhere("users.lastName in (:lastNames)", {lastNames: filters.lastNames});
+        if(filters.lastName && filters.lastName.length != 0) {
+            const lName = "%"+ filters.lastName +"%"
+            queryBuilder = queryBuilder.orWhere("users.lastName like :lastName", {lastName: lName});
         }
     }
-
-    //queryBuilder = queryBuilder.andWhere("users.deleted = false AND users.active = true");
 
     if(filters.sortBy && filters.sortDirection) {
         queryBuilder = queryBuilder.orderBy(`users.${filters.sortBy}`, filters.sortDirection);

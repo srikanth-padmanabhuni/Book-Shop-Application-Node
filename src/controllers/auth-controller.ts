@@ -1,12 +1,17 @@
 import { IError, ISuccess, IUser, UserRole } from "../constants/interfaces";
 import { User } from "../entities/User";
 import { getCustomErrorObj, getCustomSuccessObj, mapUserEntityToDto } from "../mappers/mapper";
-import { authenticateUser, createToken, verifyToken } from "../utilities/helpers";
+import { authenticateUser, createToken, encryptData, verifyToken } from "../utilities/helpers";
+import { createUser } from "./user-controller";
+
+export function addAdmin(req: any, res: any) {
+    return createUser(req, res);
+}
 
 export function login(req: any, res: any) {
     if(req && req.body) {
        let userName = req.body.userName;
-       let password = req.body.password;
+       let password = encryptData(req.body.password);
        authenticateUser(userName, password).then((user: User | null) => {
         if(!user) {
             const errorDto: IError = getCustomErrorObj("INVALID CREDENTIALS", "Username and Password doesnt match", 401);
@@ -110,15 +115,15 @@ export function validateTokenForAdmin(req: any, res: any, next: any) {
     const token = req.header('Authorization')?.split(' ')[1];
     if(!token) {
         const errorDto: IError = getCustomErrorObj("INVALID TOKEN", "Please provide valid JWT Token", 401);
-        res.json(errorDto);
+        return res.json(errorDto);
     }
     verifyToken(token).then((user: any) => {
         if(!user) {
             const errorDto: IError = getCustomErrorObj("INVALID TOKEN", "Token is not Valid", 401);
-            res.json(errorDto);
+            return res.json(errorDto);
         } else if (user.role != UserRole.ADMIN.toString()) {
             const errorDto: IError = getCustomErrorObj("AUTHORISATION ERROR", "You dont have access to do this operation", 401);
-            res.json(errorDto);
+            return res.json(errorDto);
         } else {
             console.log(user);
             req.user = user;
@@ -127,6 +132,6 @@ export function validateTokenForAdmin(req: any, res: any, next: any) {
     }, (error: Error) => {
         console.log(error);
         const errorDto: IError = getCustomErrorObj("INVALID TOKEN", "Token is not Valid", 401);
-        res.json(errorDto);
+        return res.json(errorDto);
     })
 }

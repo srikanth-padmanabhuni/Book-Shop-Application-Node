@@ -5,6 +5,7 @@ import { Subscription } from "../entities/Subscription";
 import { User } from "../entities/User";
 
 import Jwt  from "jsonwebtoken";
+import crypto from "crypto";
 
 export async function getUser(userId: number) {
     return await User.findOne({where: {id: userId}});
@@ -77,4 +78,18 @@ export function createToken(user: IUser): string {
 
 export async function verifyToken(jwtToken: any) {
     return await Jwt.verify(jwtToken, CONSTANTS.JWT_SALT);
+}
+
+export function encryptData(data: string) {
+    const cipher = crypto.createCipher('aes-256-cbc', CONSTANTS.CRYPTO_SALT);
+    let encrypted = cipher.update(data, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+}
+
+export function decryptData(data: string) {
+    const decipher = crypto.createDecipher('aes-256-cbc', CONSTANTS.CRYPTO_SALT);
+    let decrypted = decipher.update(data, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
 }
