@@ -2,7 +2,7 @@ import { IError, ISuccess, IUser } from "../constants/interfaces";
 import { User } from "../entities/User";
 import { getCustomErrorObj, getCustomSuccessObj, getErrorObj, mapUserEntityToDto } from "../mappers/mapper";
 import { getUser } from "../utilities/helpers";
-import { UpdateResult } from "typeorm";
+import { SelectQueryBuilder, UpdateResult } from "typeorm";
 
 export function createUser(req: any, res: any) {
     const user = {
@@ -83,11 +83,39 @@ export function deleteUser(req: any, res: any) {
 
 export function getAllUsers(req: any, res: any) {
 
-    const users = User.createQueryBuilder('users')
-                    .select('users')
-                    .where("users.deleted = false AND users.active = true")
-                    .orderBy("users.userName")
-                    .getMany();
+    let filters;
+    if(req.body && req.body.filters) {
+        filters = req.body.filters;
+    }
+
+    let queryBuilder: SelectQueryBuilder<User> = User.createQueryBuilder('users').select('users');
+    if(filters) {
+        if(filters.userNames && filters.userNames.length != 0) {
+            queryBuilder = queryBuilder.orWhere("users.userName in (:userNames)", {userNames: filters.userNames});
+        }
+
+        if(filters.firstNames && filters.firstNames.length != 0) {
+            queryBuilder = queryBuilder.orWhere("users.firstName in (:firstNames)", {firstNames: filters.firstNames});
+        }
+
+        if(filters.lastNames && filters.lastNames.length != 0) {
+            queryBuilder = queryBuilder.orWhere("users.lastName in (:lastNames)", {lastNames: filters.lastNames});
+        }
+    }
+
+    //queryBuilder = queryBuilder.andWhere("users.deleted = false AND users.active = true");
+
+    if(filters.sortBy && filters.sortDirection) {
+        queryBuilder = queryBuilder.orderBy(`users.${filters.sortBy}`, filters.sortDirection);
+    } else {
+        queryBuilder = queryBuilder.orderBy(`users.userName ASC`);
+    }
+
+    if(filters.pageNo) {
+        queryBuilder = queryBuilder.offset(filters.pageNo).limit(10);
+    }
+
+    const users = queryBuilder.getMany();
     users.then((usersData: User[]) => {
         if(usersData && usersData.length != 0) {
             let usersDto: IUser[] = usersData.map((user: User) => mapUserEntityToDto(user));

@@ -17,6 +17,15 @@ export function getSubscriptionById(req: any, res: any) {
                 )
                 return res.json(successDto);
             } else {
+                if(subscription.user_id != req.user.userId) {
+                    const errorDto: IError = getCustomErrorObj(
+                        "UNAUTHORISED USER",
+                        "You dont have access to this Subscription",
+                        500
+                    );
+                    return res.json(errorDto);
+                }
+
                 const subscriptionDto: ISubscription = mapSubscriptionEntityToDto(subscription);
                 return res.json(subscriptionDto);
             }
@@ -66,6 +75,16 @@ export function deleteSubscription(req: any, res: any) {
                 )
                 return res.json(successDto);
             } else {
+                
+                if(subscription.user_id != req.user.userId) {
+                    const errorDto: IError = getCustomErrorObj(
+                        "UNAUTHORISED USER",
+                        "You dont have access to delete this Subscription",
+                        500
+                    );
+                    return res.json(errorDto);
+                }
+
                 subscription.remove().then((subscription: Subscription) => {
                     const successDto: ISuccess = getCustomSuccessObj(
                         "DELETED SUBSCRIPTION",
@@ -162,6 +181,15 @@ export function updateSubscription(req: any, res: any) {
         userId: req.body?.userId,
         bookId: req.body?.bookId,
         validTill: req.body?.validTill
+    }
+
+    if(subscription.userId != req.user.userId) {
+        const errorDto: IError = getCustomErrorObj(
+            "UNAUTHORISED USER",
+            "You dont have access to update this Subscription",
+            500
+        );
+        return res.json(errorDto);
     }
 
     isUserAvailableNdReader(subscription.userId).then((isUser: boolean) => {

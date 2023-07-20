@@ -6,7 +6,7 @@ export interface IUser {
     lastName: string;
     userName: string;
     password?: string;
-    role: UserRole;
+    role: string;
     active?: boolean;
     deleted?: boolean;
     createdAt?: Date;

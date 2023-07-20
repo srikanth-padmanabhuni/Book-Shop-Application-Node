@@ -1,7 +1,10 @@
-import { UserRole } from "../constants/interfaces";
+import { CONSTANTS } from "../constants/constants";
+import { IUser, UserRole } from "../constants/interfaces";
 import { Book } from "../entities/Book";
 import { Subscription } from "../entities/Subscription";
 import { User } from "../entities/User";
+
+import Jwt  from "jsonwebtoken";
 
 export async function getUser(userId: number) {
     return await User.findOne({where: {id: userId}});
@@ -49,4 +52,29 @@ export async function isHavingAvailableStock(bookId: number, requiredStock: numb
     } else {
         return false;
     }
+}
+
+export async function authenticateUser(userName: string, password: string) {
+    const user = await User.createQueryBuilder("user")
+                        .andWhere("user.userName = :userName", {userName: userName})
+                        .andWhere("user.password = :password", {password: password})
+                        .andWhere("user.deleted = false")
+                        .andWhere("user.active = true")
+                        .getOne();
+    return user
+}
+
+export function createToken(user: IUser): string {
+    const jwtToken = Jwt.sign({
+        userId: user.id,
+        userName: user.userName,
+        name: user.firstName + " " + user.lastName,
+        role: user.role
+    }, CONSTANTS.JWT_SALT);
+
+    return jwtToken;
+}
+
+export async function verifyToken(jwtToken: any) {
+    return await Jwt.verify(jwtToken, CONSTANTS.JWT_SALT);
 }

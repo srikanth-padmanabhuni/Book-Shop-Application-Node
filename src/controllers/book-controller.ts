@@ -63,6 +63,14 @@ export function deleteBook(req: any, res: any) {
                 );
                 return res.json(errorDto);
             } else {
+                if(book.author_id != req.user.userId) {
+                    const errorDto: IError = getCustomErrorObj(
+                        "UNAUTHORISED AUTHOR",
+                        "You dont have access to delete this Book",
+                        500
+                    );
+                    return res.json(errorDto);
+                }
                 book.remove().then((book: Book) => {
                     const successDto: ISuccess = getCustomSuccessObj(
                         "DELETE SUCCESSFUL",
@@ -141,6 +149,15 @@ export function updateBook(req: any, res: any) {
         authorId: req.body?.authorId,
         availableStock: req.body?.availableStock,
         bookType: req.body?.bookType
+    }
+
+    if(book.authorId != req.user.userId) {
+        const errorDto: IError = getCustomErrorObj(
+            "UNAUTHORISED AUTHOR",
+            "You dont have access to update this Book",
+            500
+        );
+        return res.json(errorDto);
     }
 
     Book.update({id: book.bookId}, {

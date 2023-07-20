@@ -9,7 +9,7 @@ export function mapUserEntityToDto(user: User): IUser {
         firstName: user.firstName,
         lastName: user.lastName,
         userName: user.userName,
-        role: UserRole[user.role as keyof typeof UserRole],
+        role: user.role,
         active: user.active,
         deleted: user.deleted,
         createdAt: user.createdAt,

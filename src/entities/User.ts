@@ -8,7 +8,7 @@ import {
     UpdateDateColumn
 } from "typeorm"
 
-@Entity({name: "user"})
+@Entity({name: "users"})
 export class User extends BaseEntity{
     
     @PrimaryColumn({

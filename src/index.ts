@@ -10,6 +10,7 @@ import path from "path";
 import { userRoutes } from './routes/user-routes';
 import { bookRoutes } from './routes/book-routes';
 import { subscriptionRoutes } from './routes/subscription-routes';
+import { authRoutes } from './routes/auth-routes';
 
 const app = express();
 
@@ -23,7 +24,8 @@ const connectToDb = async () => {
             password: "$Sri@Krishna_143$",
             database: "NodeTraining",
             entities: [User, Subscription, Book],
-            synchronize: true
+            synchronize: true,
+            logging: true
         })
         console.log("Connected to DB successfully !!!");
 
@@ -63,6 +65,7 @@ const addRoutes = () => {
     app.use('/user', userRoutes);
     app.use('/book', bookRoutes);
     app.use('/subscription', subscriptionRoutes);
+    app.use('/auth', authRoutes);
 }
 
 connectToDb();
